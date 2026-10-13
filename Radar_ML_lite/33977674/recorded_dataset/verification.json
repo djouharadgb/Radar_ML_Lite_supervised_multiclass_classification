@@ -1,0 +1,21 @@
+{
+  "files": 660,
+  "pulses": 66000,
+  "shape_per_file": [
+    1,
+    100,
+    33600
+  ],
+  "array_bytes": 4435284480,
+  "classes": [
+    "barker",
+    "cw",
+    "fmcw",
+    "fsk",
+    "hyp",
+    "nlfm",
+    "quad"
+  ],
+  "checksums_verified": true,
+  "snr_modified": false
+}
