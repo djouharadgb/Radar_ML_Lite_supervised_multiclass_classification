@@ -3,13 +3,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-# ---------- settings (change these) ----------
 N_TRAIN_PER_FILE = 40    # 26,400 training pulses
 N_VAL_PER_FILE = 10      # 6,600 validation pulses
 EPOCHS = 15
 BATCH = 64
 SEED = 42
-# ---------------------------------------------
 
 FS = 120e6
 CLASSES = ["barker", "cw", "fmcw", "fsk", "hyp", "nlfm", "quad"]
