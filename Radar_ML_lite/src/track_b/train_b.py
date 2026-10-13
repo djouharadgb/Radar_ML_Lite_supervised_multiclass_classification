@@ -1,13 +1,24 @@
+"""Track B (time-frequency): STFT log-spectrogram -> 2D CNN.
+Run from anywhere:  python src/track_b/train_b.py
+"""
 import csv, json, time
+from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
 
-N_TRAIN_PER_FILE = 40    # 26,400 training pulses
-N_VAL_PER_FILE = 10      # 6,600 validation pulses
-EPOCHS = 15
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]                                   # the Radar_ML_lite folder
+DATA_DIR = ROOT / "dataset"                              # *_recorded.npy files
+SPLIT_CSV = ROOT / "dataset_infos" / "split_manifest.csv"
+
+# ---------- settings (change these) ----------
+N_TRAIN_PER_FILE = 80    # of 80 available per file (smoke test: 2)
+N_VAL_PER_FILE = 10      # of 20 available per file
+EPOCHS = 20              # smoke test: 1
 BATCH = 64
 SEED = 42
+# ---------------------------------------------
 
 FS = 120e6
 CLASSES = ["barker", "cw", "fmcw", "fsk", "hyp", "nlfm", "quad"]
@@ -33,7 +44,7 @@ def load_split(rows, per_file):
     X, y, npw, spw = [], [], [], []
     for f, idxs in by_file.items():
         idxs = list(rng.permutation(idxs))[:per_file]
-        arr = np.load(f, mmap_mode="r")
+        arr = np.load(DATA_DIR / f, mmap_mode="r")
         label = CLASSES.index(get_label(f))
         for i in idxs:
             raw = np.array(arr[0, int(i)])
@@ -94,7 +105,7 @@ def evaluate(X, y, npw, spw):
 
 
 if __name__ == "__main__":
-    with open("split_manifest.csv", newline="") as f:
+    with open(SPLIT_CSV, newline="") as f:
         rows = list(csv.DictReader(f))
     t0 = time.time()
     print("loading data...")
@@ -121,7 +132,7 @@ if __name__ == "__main__":
             sb = torch.from_numpy(str_[idx]).to(device)
             yb = torch.from_numpy(ytr[idx]).to(device)
             snr = snr_t[torch.randint(0, len(SNRS), (len(idx),), device=device)]  # random SNR per pulse
-            xb = add_noise(xb, nb, sb, snr.unsqueeze(1).squeeze(1)) if False else add_noise(xb, nb, sb, snr)
+            xb = add_noise(xb, nb, sb, snr)
             loss = loss_fn(model(to_spec(xb)), yb)
             opt.zero_grad(); loss.backward(); opt.step()
             total += loss.item() * len(idx)
@@ -131,8 +142,8 @@ if __name__ == "__main__":
         print("   per SNR:", {k: round(v, 2) for k, v in res.items()})
         if mean_ba > best:
             best = mean_ba
-            torch.save(model.state_dict(), "best_trackB.pt")
+            torch.save(model.state_dict(), HERE / "best_trackB.pt")
             json.dump(dict(track="B", n_fft=256, hop=128, window="hann", snrs=SNRS, seed=SEED,
                            train_per_file=N_TRAIN_PER_FILE, val_score=best, val_per_snr=res),
-                      open("config_trackB.json", "w"), indent=2)
+                      open(HERE / "config_trackB.json", "w"), indent=2)
     print("best val mean balanced accuracy:", best)
