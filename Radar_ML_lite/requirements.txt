@@ -1,3 +1,15 @@
+# SynapsON Radar ML Lite - dependencies (Python 3.12 used so far; 3.9+ should work)
+#
+# 1) Install PyTorch FIRST, separately (see README_setup below), because the
+#    right build depends on the machine:
+#      NVIDIA GPU (what we used):
+#        pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124 --default-timeout=300 --retries 10
+#      CPU only:
+#        pip install torch
+#
+# 2) Then install everything else:
+#      pip install -r requirements-datathon.txt
+
 numpy
-# Optional plotting dependency:
 matplotlib
+scipy
