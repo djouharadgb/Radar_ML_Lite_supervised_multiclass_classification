@@ -7,3 +7,5 @@ organizer_private/
 *.npy
 *.zip
 *.partial*
+dataset/
+*_recorded.json
