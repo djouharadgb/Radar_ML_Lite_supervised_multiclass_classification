@@ -12,13 +12,11 @@ ROOT = HERE.parents[1]                                   # the Radar_ML_lite fol
 DATA_DIR = ROOT / "dataset"                              # *_recorded.npy files
 SPLIT_CSV = ROOT / "dataset_infos" / "split_manifest.csv"
 
-# ---------- settings (change these) ----------
 N_TRAIN_PER_FILE = 80    # of 80 available per file (smoke test: 2)
 N_VAL_PER_FILE = 10      # of 20 available per file
 EPOCHS = 20              # smoke test: 1
 BATCH = 64
 SEED = 42
-# ---------------------------------------------
 
 FS = 120e6
 CLASSES = ["barker", "cw", "fmcw", "fsk", "hyp", "nlfm", "quad"]
