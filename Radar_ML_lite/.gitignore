@@ -9,3 +9,4 @@ organizer_private/
 *.partial*
 dataset/
 *_recorded.json
+plots/
