@@ -1,0 +1,80 @@
+{
+  "30": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 4400,
+    "clipped_iq_fraction": 0.0
+  },
+  "25": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "20": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "15": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "10": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "5": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "0": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "-5": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "-10": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "-15": {
+    "examples": 13200,
+    "clipped_iq_values": 0,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0
+  },
+  "-20": {
+    "examples": 13200,
+    "clipped_iq_values": 279,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 6.290584415584416e-07
+  },
+  "-25": {
+    "examples": 13200,
+    "clipped_iq_values": 1062958,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.0023966405122655124
+  },
+  "-30": {
+    "examples": 13200,
+    "clipped_iq_values": 23892268,
+    "unattainable_targets": 0,
+    "clipped_iq_fraction": 0.053869651875901876
+  }
+}

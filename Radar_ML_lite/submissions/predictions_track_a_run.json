@@ -1,0 +1,29 @@
+{
+  "track": "A",
+  "output": "C:\\Users\\Think pro\\Desktop\\Radar_ML_Lite_DATATHON\\Radar_ML_Lite_supervised_multiclass_classification\\Radar_ML_lite\\submissions\\predictions_track_a.csv",
+  "output_sha256": "e30b0cdba1e6d092bb3230bc5ecd918f54a8a09a554490ecfdaa2129963c093d",
+  "examples": 171600,
+  "seconds": 137.3,
+  "ms_per_pulse_incl_loading": 0.8003,
+  "predicted_label_counts": {
+    "barker": 17138,
+    "fmcw": 28053,
+    "fsk": 46032,
+    "nlfm": 22429,
+    "hyp": 26695,
+    "quad": 26852,
+    "cw": 4401
+  },
+  "torch": "2.6.0+cu124",
+  "weights_sha256": "e9067e5aa097ac7f8b3ea479d9bf43986492ac90ede132d764e74e29420f8e76",
+  "device": "cuda",
+  "lags": [
+    1,
+    4,
+    16
+  ],
+  "crop": [
+    2520,
+    14280
+  ]
+}
