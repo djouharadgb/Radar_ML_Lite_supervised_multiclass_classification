@@ -1,0 +1,117 @@
+{
+  "track": "A",
+  "features": "RMS-normalised I,Q + lag conjugate products + 2nd-order lag products + learned FIR filterbank branch (energy detector)",
+  "lags": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "haf_pairs": [
+    [
+      4,
+      4
+    ],
+    [
+      8,
+      8
+    ],
+    [
+      16,
+      16
+    ]
+  ],
+  "use_haf": true,
+  "use_fb": true,
+  "fb": [
+    64,
+    256,
+    16
+  ],
+  "crop_samples": [
+    2520,
+    14280
+  ],
+  "widths": [
+    48,
+    64,
+    96,
+    128,
+    192,
+    256
+  ],
+  "blocks": [
+    1,
+    1,
+    2,
+    2,
+    2,
+    2
+  ],
+  "kernels": [
+    7,
+    7,
+    5,
+    5,
+    3,
+    3
+  ],
+  "gru": 128,
+  "n_in": 20,
+  "models": [
+    "model_0.pt",
+    "model_1.pt",
+    "model_2.pt"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "epochs": 80,
+  "curriculum_epochs": 12,
+  "low_focus": 0.5,
+  "classes": [
+    "barker",
+    "cw",
+    "fmcw",
+    "fsk",
+    "hyp",
+    "nlfm",
+    "quad"
+  ],
+  "snrs": [
+    30,
+    25,
+    20,
+    15,
+    10,
+    5,
+    0,
+    -5,
+    -10,
+    -15,
+    -20,
+    -25,
+    -30
+  ],
+  "val_mean_ba": 0.8913518842923771,
+  "val_tiebreak": 0.5304646396211216,
+  "val_per_snr": {
+    "30": 1.0,
+    "25": 1.0,
+    "20": 1.0,
+    "15": 1.0,
+    "10": 1.0,
+    "5": 1.0,
+    "0": 1.0,
+    "-5": 1.0,
+    "-10": 1.0,
+    "-15": 0.9961805769375393,
+    "-20": 0.8601190873554775,
+    "-25": 0.4870039905820574,
+    "-30": 0.24427084092582976
+  }
+}
