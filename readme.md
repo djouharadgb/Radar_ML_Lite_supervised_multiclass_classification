@@ -1,129 +1,187 @@
-# RadarML Lite
+# LesZivés – SynapsON Radar ML Lite Challenge
 
-RadarML contains radar waveforms recorded over the air using UCL's ARESTOR
-RFSoC platform. This repository supports a reduced, single-receiver dataset for
-learning and comparing radar modulation classifiers. Configurations vary in
-modulation, pulse duration, bandwidth and centre frequency.
+Radar pulse **modulation classification** from raw I/Q samples, built for the SynapsON Radar ML Lite Challenge (Kaggle datathon).
 
-**Taking part in the hackathon? Start with the [Hackathon guide](hackathon/README.md)**
-for setup, signal loading, SNR expansion, evaluation and submission guidance.
+**Team:** LesZivés (4 members)
+**Kaggle teams:** `LesZivés_time` (Track A) · `LesZivés_freq` (Track B)
 
-## The reduced dataset
+---
 
-The compact archive preserves recorded samples without adding synthetic noise.
-Participants can generate different signal-to-noise ratio (SNR) conditions locally,
-keeping the download smaller than a dataset containing every noise variant.
-Original receiver noise remains; these are not noise-free signals.
+## 1. Task
 
-| Property | RadarML Lite compact release |
-| --- | --- |
-| Waveform configurations | 660 |
-| Receiver | ADC0, one of the original three channels |
-| Pulses per configuration | First 100 recorded pulses, source indices 0–99 |
-| Total pulses | 66,000 |
-| Classes | `barker`, `cw`, `fmcw`, `fsk`, `hyp`, `nlfm`, `quad` |
-| Samples per pulse | 16,800 complex samples at 120 MS/s |
-| Array format | int16, `(1, 100, 33600)`, interleaved I/Q |
-| Compact ZIP | Approximately 2.54 GB |
-| Extracted signal arrays | Approximately 4.44 GB |
+Each example is one radar pulse: 16,800 complex samples at 120 MS/s (int16 interleaved I/Q). The goal is to predict one of 7 modulations:
 
-The original archive has three receivers, ADC0, ADC2 and ADC4, with 1,000 pulses
-per receiver for 648 configurations and 8,000 for the remaining 12. RadarML Lite
-selects one receiver and 100 pulses from each configuration.
+`barker, cw, fmcw, fsk, hyp, nlfm, quad`
 
-Expanding to 13 requested SNR settings (+30 to −30 dB in 5 dB steps) creates
-858,000 examples and approximately 57.66 GB of arrays. The compact arrays use
-13 times less storage, a reduction of 92.3%. Noise variants are not additional
-independent captures.
+- **Metric:** balanced accuracy computed per requested SNR (+30 … −30 dB, 13 levels), then averaged.
+- **Tie-break:** mean balanced accuracy at −20 / −25 / −30 dB.
+- **Test set:** 171,600 rows (13,200 pulses × 13 SNR levels).
+- **Submission format:** CSV with header exactly `sample_id,label`.
 
-## Download and quick start
+| Track | Allowed representation | Kaggle team |
+|-------|------------------------|-------------|
+| **A** | Time-domain only (no FFT / STFT / wavelet / spectrogram) | `LesZivés_time` |
+| **B** | Time-frequency representations | `LesZivés_freq` |
 
-At the start of the hackathon:
+---
 
-1. Download **`recorded_dataset.zip`** from the
-   [UCL Radar ML - Lite dataset page](https://rdr.ucl.ac.uk/articles/dataset/Radar_ML_-_Lite/33977674).
-2. Download `split_manifest.csv` and `split_manifest.json` separately from that
-   page. If they are not yet publicly visible, use the repository copies:
-   [CSV](hackathon/split_manifest.csv) and [JSON](hackathon/split_manifest.json).
-   On GitHub, use **Download raw file** to save the actual file, not an HTML page.
-3. Extract the ZIP and put both manifest files inside the extracted
-   `recorded_dataset` folder, alongside the `.npy` files. No re-zipping is needed;
-   the original ZIP and its checksum remain unchanged.
+## 2. Results
 
-**Do not download, inspect or use `blind_test_participants.zip` until the
-organizers announce final evaluation after model freeze**, even if it is visible
-on the same download page. Train and tune only on the supplied 80/20 split.
-The original full RadarML archive is not needed.
+| Track | Model | Validation | Leaderboard |
+|-------|-------|-----------|-------------|
+| A | Time-domain CNN + bi-GRU, 3-model ensemble (v3) | **0.8914** (ensemble, 13,200 val pulses) | see Kaggle |
+| B | STFT log-spectrogram 2D ResNet, 3-model ensemble | ≈ 0.89 | **0.896** |
 
-Open a terminal inside the extracted `recorded_dataset` folder.
-With Python 3.9 or newer installed:
+Track A self-test (synthetic degradation on validation, ensemble v3):
 
-```bash
-python -m pip install numpy
-python compact_dataset.py expand --input . --output ../expanded
+| SNR (dB) | 0 | −10 | −15 | −20 | −25 |
+|----------|---|-----|-----|-----|-----|
+| Balanced acc. | 1.000 | 1.000 | 0.996 | 0.854 | 0.506 |
+
+Most of the remaining error is at SNR ≤ −20 dB, which is where the tie-break lives.
+
+---
+
+## 3. Repository layout
+
+```
+Radar_ML_lite/
+├── src/
+│   ├── track_a/
+│   │   └── predict_track_a_v3.py      # Track A inference -> submission CSV
+│   └── track_b/
+│       └── predict_track_b.py         # Track B inference -> submission CSV
+├── notebooks/
+│   ├── track_a_v3.ipynb               # Track A training (time-domain)
+│   └── train_b_plus.ipynb             # Track B training (STFT ensemble)
+├── track_a_runs/final_v3/             # Track A weights: config.json, model_0..2.pt
+├── track_b_plus/                      # Track B weights: ensemble_config.json, best_nfft*_hop*_seed*.pt
+├── submissions/                       # generated CSVs (prediction_track_a_v3.csv, predictions_track_b.csv)
+├── EVENT_RULES.md                     # organizers' rules
+├── participant_loader.py              # organizers' loader
+├── score_submission.py                # organizers' scorer
+└── requirements.txt
 ```
 
-The expansion scripts are **included in the compact ZIP**. Use those bundled
-scripts together; the upstream original preprocessing scripts expect a
-different input format. Full expansion requires **57.66 GB of additional space**.
-See the [guide](hackathon/README.md) for environment setup, a small first check
-and loading examples before expanding everything.
+The dataset (training / validation / blind test) is provided by the organizers and is **not** included in this repository.
 
-To clone this repository:
+---
 
-```bash
-git clone https://github.com/UCLRadarGroup/Radar_ML_lite.git
+## 4. Setup
+
+```powershell
+cd Radar_ML_lite
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+# + a CUDA build of PyTorch if a GPU is available
 ```
 
-## Blind final evaluation
+Linux / macOS: `source .venv/bin/activate`.
 
-A separate blind test has been created and verified: **13,200 held-out source
-pulses across 660 configurations**, each at **13 requested SNRs from +30 to
-−30 dB**, giving **171,600 examples**. All seven modulation classes appear at
-every SNR. Its participant ZIP is approximately **11.55 GB**; allow about
-**23.1 GB** to keep both the ZIP and extracted files.
+---
 
-The [seven-day event timetable](hackathon/EVENT_RULES.md) uses relative days:
-kick-off on Day 0 at 09:00, model freeze on Day 4 at 17:00, blind-test release
-on Day 5 at 09:00, and final submissions on Day 6 at 17:00 (Europe/London time).
-The separate blind-test record stays private until release. Organizers will
-announce the submission destination; the test
-signals are not hosted in Git. The answer key and source mappings remain private.
-See the [blind test guide](hackathon/README.md#7-final-evaluation-and-submission)
-for loading, submission format, verification checksum and preprocessing caveats,
-including **5.38% I/Q-value clipping at −30 dB** under the same rules as the main
-dataset.
+## 5. Generate the submission files
 
-## Repository contents
+Run from the `Radar_ML_lite` folder with the virtual environment active.
 
-| Path | Purpose |
-| --- | --- |
-| [hackathon/README.md](hackathon/README.md) | Participant walkthrough and event protocol |
-| [hackathon/EVENT_RULES.md](hackathon/EVENT_RULES.md) | Relative-day timetable, data/model rules, submission limits and tie-breaking |
-| [hackathon/split_manifest.csv](hackathon/split_manifest.csv) | Fixed training/validation pulse assignments |
-| [hackathon/split_manifest.json](hackathon/split_manifest.json) | Split algorithm, indexing and CSV checksum |
-| [hackathon/participant_loader.py](hackathon/participant_loader.py) | Loader for anonymous blind-test shards |
-| [hackathon/score_submission.py](hackathon/score_submission.py) | Organizer scoring utility; no answer key is included |
-| [docs/participant_notes.md](docs/participant_notes.md) | Updated slide-ready background notes, I/Q theory and current event workflow |
-| [hackathon/compact_dataset.py](hackathon/compact_dataset.py) | Build compact recordings or expand them into requested SNR conditions |
-| [hackathon/make_dataset_hackathon.py](hackathon/make_dataset_hackathon.py) | Shared noise preprocessing and original-array preparation |
-| [hackathon/create_split_manifest.py](hackathon/create_split_manifest.py) | Reproducible split-generation utility; participants use the published manifest |
-| [hackathon/plot_modulations.py](hackathon/plot_modulations.py) | Plot original or expanded recordings; compact inspection is covered in the guide |
-| [tests/](tests/) | Compact conversion, preprocessing and scoring checks |
+### Track A (time-domain) – `LesZivés_time`
 
-The [original RadarML repository](https://github.com/UCLRadarGroup/Radar_ML)
-contains the original multi-channel scripts and example notebook. Their data
-layout and split handling differ from this compact hackathon workflow. Use the
-expansion scripts bundled in the compact ZIP. NumPy is sufficient for loading
-and expansion; install libraries for your method as needed.
+```powershell
+# 1) sanity check on synthetic noisy validation data (writes no CSV)
+python src\track_a\predict_track_a_v3.py --selftest
 
-## Attribution and licensing
+# 2) prediction on the blind test set
+python src\track_a\predict_track_a_v3.py
+```
 
-Source: Ritchie, White and Hosford (2025),
-[RadarML, version 1](https://doi.org/10.5522/04/30752767.v1).
-See [LICENSE](LICENSE) for repository code terms and the dataset record for
-dataset licensing. Code licensing does not replace dataset terms.
+Output: `submissions\prediction_track_a_v3.csv` and `submissions\prediction_track_a_v3_run.json` (weights hash, device, timing).
 
-## Contact
+Optional flags: `--out <path>`, `--blind-dir <path>`, `--batch <n>`, `--verify-all` (hash every `.npy` against `checksums.json`).
 
-Open a GitHub issue or contact m.ritchie@ucl.ac.uk.
+### Track B (time-frequency) – `LesZivés_freq`
+
+```powershell
+python src\track_b\predict_track_b.py --selftest
+python src\track_b\predict_track_b.py
+```
+
+Output: `submissions\predictions_track_b.csv`.
+
+### Checks performed automatically
+
+Both scripts:
+- locate the blind-test folder and verify its checksums;
+- write rows in the order of `submission_template.csv`;
+- check that the ID set equals the template's, the header is `sample_id,label`, and every label is one of the 7 classes;
+- re-read the written file to validate it.
+
+Expected: **171,600 rows + 1 header**, all 7 classes present.
+
+```powershell
+dir submissions
+Get-Content submissions\prediction_track_a_v3.csv -TotalCount 3
+```
+
+---
+
+## 6. Method
+
+### Shared ideas
+- Per-pulse RMS normalization.
+- Signal-window crop (21–119 µs, 11,760 samples) to drop the leading noise-only part and the tail.
+- **SNR emulation during training:** a torch port of the organizers' `degrade()` (noise scaled to the requested SNR, int16 clipping) so training sees the same noise as the test.
+- Random carrier-phase augmentation.
+- **SNR curriculum:** first epochs at easy SNRs, then 50% of draws in [−30, −10] dB, where the metric is decided.
+- Loss tuned for balanced accuracy (logit adjustment, label smoothing); AdamW + OneCycle; EMA of weights; bf16 autocast.
+- Ensemble of 3 independently seeded models, softmax averaged.
+
+### Track A – time domain only
+- Input channels: I, Q, plus **lag conjugate products** `z[n]·conj(z[n−k])` for k ∈ {1,2,4,8,16,32} and second-order products for lag pairs (4,4), (8,8), (16,16). These are sample-domain operations (no transform).
+- Backbone: stem conv → 6 residual squeeze-and-excitation stages (stride 2).
+- A learned 1D conv filter-bank branch (`Conv1d(2→128, k=256, stride=16)`, magnitude of 64 complex filters, 3 residual blocks) concatenated with the backbone features.
+- Bi-GRU → attentive statistics pooling → MLP head.
+- 80 epochs, seeds 42 / 43 / 44.
+
+### Track B – time-frequency
+- STFT log-magnitude spectrogram, whitened with the noise floor estimated on the first 20 µs, then cropped to the signal window.
+- Residual 2D CNN with a 4×4 pooled head.
+- Ensemble of 3 models with different STFT settings (`n_fft` = 256 / 128 / 512).
+
+---
+
+## 7. Rule compliance
+
+- Trained **from scratch on the supplied training pulses only**; validation pulses were never used for training.
+- No model change or test-driven adaptation after the freeze.
+- No sample IDs, row numbers or requested SNR used as features.
+- Each test sample is classified independently of other test samples (no cross-example linking).
+- One final entry per track, submitted from the matching Kaggle team.
+- Track A uses no FFT / STFT / wavelet / spectrogram call anywhere in its pipeline.
+
+---
+
+## 8. Reproducibility and cost
+
+| Item | Value |
+|------|-------|
+| Hardware | _fill in (GPU model, RAM)_ |
+| Track A training time | _fill in_ |
+| Track B training time | _fill in_ |
+| Model size (Track A, 3 models) | _fill in (MB)_ |
+| Model size (Track B, 3 models) | _fill in (MB)_ |
+| Inference per pulse | _fill in (ms), incl. representation generation_ |
+
+Seeds: Track A 42 / 43 / 44; Track B per `ensemble_config.json`.
+
+---
+
+## 9. AI-assistance disclosure
+
+Parts of the code (training notebooks, inference scripts, this README) were written and iterated with the help of Claude (Anthropic). All results were run, checked and submitted by the team.
+
+---
+
+## 10. Team
+
+**LesZivés** – Assia, Sara, Nesrine, Djouhara
