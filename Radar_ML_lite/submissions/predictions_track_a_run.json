@@ -1,0 +1,53 @@
+{
+  "track": "A",
+  "output": "C:\\Users\\Think pro\\Desktop\\Radar_ML_Lite_DATATHON\\Radar_ML_Lite_supervised_multiclass_classification\\Radar_ML_lite\\submissions\\predictions_track_a.csv",
+  "output_sha256": "8c421043eba665b7591a4a7166936b125507a5909d9c9ca97a1116d6d875407d",
+  "examples": 171600,
+  "seconds": 315.6,
+  "ms_per_pulse_incl_loading": 1.8392,
+  "predicted_label_counts": {
+    "barker": 18128,
+    "fmcw": 27935,
+    "fsk": 46649,
+    "quad": 24881,
+    "nlfm": 23232,
+    "hyp": 25511,
+    "cw": 5264
+  },
+  "torch": "2.6.0+cu124",
+  "weights_dir": "C:\\Users\\Think pro\\Desktop\\Radar_ML_Lite_DATATHON\\Radar_ML_Lite_supervised_multiclass_classification\\Radar_ML_lite\\track_a_runs\\final_v3",
+  "weights_sha256": {
+    "model_0.pt": "eaa2893170a210ecd0bb09111c1789bd97c5bbcd9177beaff44303dc0e5e3a97",
+    "model_1.pt": "a318ed5358c431362f4e999ce01e7cfb92a1b06aaa7be91c82b82f88845f65ef",
+    "model_2.pt": "7f540175c854b80d240747fb77ee850bca51bf913bbd72071f1f1300c663b2bf"
+  },
+  "config_sha256": "a50cc7efbe63d2dd483707dbea59411f4514ba38a87269cb6edf6f65ccc800eb",
+  "device": "cuda",
+  "lags": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "haf_pairs": [
+    [
+      4,
+      4
+    ],
+    [
+      8,
+      8
+    ],
+    [
+      16,
+      16
+    ]
+  ],
+  "use_fb": true,
+  "crop": [
+    2520,
+    14280
+  ]
+}
